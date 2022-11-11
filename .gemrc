@@ -1,0 +1,7 @@
+#  ---------------------------------------------------------------------------
+#  Description: RubyGems defaults can be set in a .gemrc file.
+#  Note:        To be placed in the $HOME directory.
+#  ---------------------------------------------------------------------------
+
+    # Gem installs shouldn't waste time on documentation
+    gem: --no-document
