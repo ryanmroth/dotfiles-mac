@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #  ---------------------------------------------------------------------------
-#  Description: This file deploys important mac defaults.
+#  Description: This file deploys important Mac defaults.
 #               A considered modification to dotfiles by https://mths.be/macos
 #               Thanks Mathias!
 #  Note:        Don't forget to change COMPUTERNAME to your chosen hostname

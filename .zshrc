@@ -1,3 +1,8 @@
+#  ---------------------------------------------------------------------------
+#  Description: This file deploys important ZSH and Oh My Zsh configs.
+#  Note:        To be placed in the $HOME directory.
+#  ---------------------------------------------------------------------------
+
 # Path to your oh-my-zsh installation.
 ZSH="$HOME/.oh-my-zsh"
 

@@ -1,8 +1,8 @@
 #  ---------------------------------------------------------------------------
-#  Description: This file holds all my ZSH configurations and aliases.
+#  Description: This file holds all my ZSH aliases.
 #  Note:        Intended to be used in concert with Oh My Zsh
 #               Create a file entitled 'aliases.zsh' in ~/.config/ohmyzsh/
-#               For a full list of active aliases, run `alias`.
+#               For a full list of active aliases, run 'alias'.
 #  ---------------------------------------------------------------------------
 #  Sections:
 #  1.  Make Terminal Better (Remapping defaults and adding functionality)
@@ -83,7 +83,7 @@
 #  --------------------------------------------------
 #   2.  File & Folder Management
 #  --------------------------------------------------
-#
+
     alias filesize="stat -f \"%z bytes\""     # Get file size
     alias numFiles='echo $(ls -1 | wc -l)'    # Count of non-hidden files in current dir
     alias make1mb='mkfile 1m ./1MB.dat'       # Creates a file of 1mb size (all zeros)
@@ -255,7 +255,7 @@
         docker run --rm -it --entrypoint=/bin/sh -v `pwd`:/${dirname} -w /${dirname} "$@"
     }
 
-    # For Pentesting
+    # Docker For Pentesting
     # ---------------
     
     # Run any Impacket example just by typing "impacket"
@@ -263,6 +263,7 @@
     function impacket() {
         docker run --rm -it f1rstm4tter/impacket "$@"
     }
+
     #  Mount the current directory into /tmp/serve and then 
     #  use Impacket’s smbserver.py to create a share at that directory
     function smbservehere() {
