@@ -1,0 +1,6 @@
+#  ---------------------------------------------------------------------------
+#  Description: Defaults for asdf.
+#  Note:        To be placed in the $HOME directory.
+#  ---------------------------------------------------------------------------
+
+legacy_version_file = yes
