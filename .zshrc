@@ -22,11 +22,6 @@
   # Add wisely, as too many plugins slow down shell startup.
   plugins=(git brew zsh-syntax-highlighting zsh-autosuggestions)
 
-  # Include files containing aliases, exports, and functions.
-  source $HOME/.aliases
-  source $HOME/.exports
-  source $HOME/.functions
-
   source $ZSH/oh-my-zsh.sh
 
   # Load zsh-syntax-highlighting.
