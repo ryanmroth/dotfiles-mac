@@ -30,7 +30,7 @@
         followredirects = false
         headers = [
             "X-Forwarded-For: 127.0.0.1",
-            "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36"
+            "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0"
         ]
         ignorebody = false
         method = "GET"
@@ -44,7 +44,7 @@
 
     [input]
         dirsearchcompat = false
-        extensions = ".js,.php,.bak,.txt,.asp,.aspx,.jsp,.html,.zip,.jar,.sql,.json,.old,.gz,.shtml,.log,.swp,.yaml,.yml,.config,.save,.rsa,.ppk,.pub,.ps1,.sh,.ts,.component,.service,.module,.pdf,.gif,.png,.jpg,.action,.vhd"
+        extensions = ".js,.php,.bak,.txt,.asp,.aspx,.ashx,.jsp,.html,.zip,.jar,.sql,.json,.old,.gz,.shtml,.log,.swp,.yaml,.yml,.config,.save,.rsa,.ppk,.pub,.ps1,.sh,.ts,.component,.service,.module,.pdf,.gif,.png,.jpg,.action,.vhd,.md,.nsf,.jsf"
         ignorewordlistcomments = true
         inputmode = "clusterbomb"
         inputnum = 100

@@ -3,5 +3,5 @@
 #  Note:        To be placed in the $HOME directory.
 #  ---------------------------------------------------------------------------
 
-    # Gem installs shouldn't waste time on documentation
-    gem: --no-document
+# Gem installs shouldn't waste time on documentation
+gem: --no-document

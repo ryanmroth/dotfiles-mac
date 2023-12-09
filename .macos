@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 #  ---------------------------------------------------------------------------
 #  Description: This file deploys important Mac defaults.
-#               A considered modification to dotfiles by https://mths.be/macos
-#               Thanks Mathias!
-#  Note:        Don't forget to change COMPUTERNAME to your chosen hostname
+#               Contains sane security defaults.
+#               A considered modification to dotfiles by:
+#                   https://mths.be/macos
+#                   https://github.com/geerlingguy/dotfiles/
 #  ---------------------------------------------------------------------------
 #  Sections:
 #  1.  Init
@@ -35,21 +36,19 @@
     # settings we’re about to change
     osascript -e 'tell application "System Preferences" to quit'
 
-    # Ask for the administrator password upfront
-    sudo -v
-
-    # Keep-alive: update existing `sudo` time stamp until `.macos` has finished
-    while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+    # Warn that some commands will not be run if the script is not run as root.
+    if [[ $EUID -ne 0 ]]; then
+      RUN_AS_ROOT=false
+      printf "Certain commands will not be run without sudo privileges. To run as root, run the same command prepended with 'sudo', for example: $ sudo $0\n\n" | fold -s -w 80
+    else
+      RUN_AS_ROOT=true
+      # Update existing `sudo` timestamp until `.osx` has finished
+      while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+    fi
 
 #  --------------------------------------------------
 #   2.  General UI/UX
 #  --------------------------------------------------
-
-    # Set computer name (as done via System Preferences → Sharing)
-    sudo scutil --set ComputerName "COMPUTERNAME"
-    sudo scutil --set HostName "COMPUTERNAME"
-    sudo scutil --set LocalHostName "COMPUTERNAME"
-    sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string "COMPUTERNAME"
 
     # Disable the sound effects on boot
     sudo nvram SystemAudioVolume=" "
@@ -89,9 +88,6 @@
     # Automatically quit printer app once the print jobs complete
     defaults write com.apple.print.PrintingPrefs "Quit When Finished" -bool true
 
-    # Disable the “Are you sure you want to open this application?” dialog
-    defaults write com.apple.LaunchServices LSQuarantine -bool false
-
     # Remove duplicates in the “Open With” menu (also see `lscleanup` alias)
     /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user
 
@@ -127,9 +123,6 @@
     # Disable smart quotes as they’re annoying when typing code
     defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
 
-    # Disable auto-correct
-    defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
-
   #  --------------------------------------------------
   #   3.  Input & Associated Devices
   #  --------------------------------------------------
@@ -151,59 +144,42 @@
     defaults write NSGlobalDomain KeyRepeat -int 1
     defaults write NSGlobalDomain InitialKeyRepeat -int 10
 
-    # Set language and text formats
-    # Note: if you’re in the US, replace `EUR` with `USD`, `Centimeters` with
-    # `Inches`, `en_GB` with `en_US`, and `true` with `false`.
-    defaults write NSGlobalDomain AppleLanguages -array "en"
-    defaults write NSGlobalDomain AppleLocale -string "en_US@currency=USD"
-    defaults write NSGlobalDomain AppleMeasurementUnits -string "Inches"
-    defaults write NSGlobalDomain AppleMetricUnits -bool false
-
-    # Set the timezone; see `sudo systemsetup -listtimezones` for other values
-    sudo systemsetup -settimezone "America/New_York" > /dev/null
-
-    # Stop iTunes from responding to the keyboard media keys
-    # launchctl unload -w /System/Library/LaunchAgents/com.apple.rcd.plist 2> /dev/null
+    # Disable auto-correct
+    defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
 
 #  --------------------------------------------------
 #   4. Energy Saving
 #  --------------------------------------------------
 
-    # Enable lid wakeup
-    sudo pmset -a lidwake 1
-
-    # Restart automatically on power loss
-    sudo pmset -a autorestart 1
-
-    # Restart automatically if the computer freezes
-    sudo systemsetup -setrestartfreeze on
-
-    # Sleep the display after 15 minutes
-    sudo pmset -a displaysleep 15
-
-    # Disable machine sleep while charging
-    sudo pmset -c sleep 0
-
-    # Set machine sleep to 5 minutes on battery
-    sudo pmset -b sleep 5
-
-    # Set standby delay to 24 hours (default is 1 hour)
-    sudo pmset -a standbydelay 86400
-
-    # Never go into computer sleep mode
-    sudo systemsetup -setcomputersleep Off > /dev/null
-
-    # Hibernation mode
-    # 0: Disable hibernation (speeds up entering sleep mode)
-    # 3: Copy RAM to disk so the system state can still be restored in case of a power failure.
-    sudo pmset -a hibernatemode 0
-
-    # Remove the sleep image file to save disk space
-    sudo rm /private/var/vm/sleepimage
-    # Create a zero-byte file instead…
-    sudo touch /private/var/vm/sleepimage
-    # …and make sure it can’t be rewritten
-    sudo chflags uchg /private/var/vm/sleepimage
+    # Take the following actions if running as root
+    if [[ "$RUN_AS_ROOT" = true ]]; then
+        # Restart automatically if the computer freezes
+        systemsetup -setrestartfreeze on
+        # Disable lid wakeup
+        pmset -a lidwake 0
+        # Restart automatically on power loss
+        pmset -a autorestart 1
+        # Sleep the display after 15 minutes
+        pmset -a displaysleep 15
+        # Disable machine sleep while charging
+        pmset -c sleep 0
+        # Set machine sleep to 5 minutes on battery
+        pmset -b sleep 5
+        # Set standby delay to 24 hours (default is 1 hour)
+        pmset -a standbydelay 86400
+        # Never go into computer sleep mode
+        systemsetup -setcomputersleep Off > /dev/null
+        # Hibernation mode
+        # 0: Disable hibernation (speeds up entering sleep mode)
+        # 3: Copy RAM to disk so the system state can still be restored in case of a power failure.
+        pmset -a hibernatemode 0
+        # Remove the sleep image file to save disk space
+        rm /private/var/vm/sleepimage
+        # Create a zero-byte file instead…
+        touch /private/var/vm/sleepimage
+        # …and make sure it can’t be rewritten
+        chflags uchg /private/var/vm/sleepimage
+    fi
 
 #  --------------------------------------------------
 #   5. Screen
@@ -227,16 +203,18 @@
     defaults write NSGlobalDomain AppleFontSmoothing -int 1
 
     # Enable HiDPI display modes (requires restart)
-    sudo defaults write /Library/Preferences/com.apple.windowserver DisplayResolutionEnabled -bool true
+    if [[ "$RUN_AS_ROOT" = true ]]; then
+        defaults write /Library/Preferences/com.apple.windowserver DisplayResolutionEnabled -bool true
+    fi
 
 #  --------------------------------------------------
 #   6. Finder
 #  --------------------------------------------------
 
-    # Finder: allow quitting via ⌘ + Q; doing so will also hide desktop icons
+    # Allow quitting via ⌘ + Q; doing so will also hide desktop icons
     defaults write com.apple.finder QuitMenuItem -bool true
 
-    # Finder: disable window animations and Get Info animations
+    # Disable window animations and Get Info animations
     defaults write com.apple.finder DisableAllAnimations -bool true
 
     # Set Desktop as the default location for new Finder windows
@@ -251,16 +229,16 @@
     defaults write com.apple.finder ShowMountedServersOnDesktop -bool false
     defaults write com.apple.finder ShowRemovableMediaOnDesktop -bool false
 
-    # Finder: show hidden files by default
-    #defaults write com.apple.finder AppleShowAllFiles -bool true
+    # Show hidden files by default
+    # defaults write com.apple.finder AppleShowAllFiles -bool true
 
-    # Finder: show all filename extensions
+    # Show all filename extensions
     defaults write NSGlobalDomain AppleShowAllExtensions -bool true
 
-    # Finder: show status bar
+    # Show status bar
     defaults write com.apple.finder ShowStatusBar -bool true
 
-    # Finder: show path bar
+    # Show path bar
     defaults write com.apple.finder ShowPathbar -bool true
 
     # Display full POSIX path as Finder window title
@@ -300,6 +278,11 @@
     /usr/libexec/PlistBuddy -c "Set :FK_StandardViewSettings:IconViewSettings:iconSize 72" ~/Library/Preferences/com.apple.finder.plist
     /usr/libexec/PlistBuddy -c "Set :StandardViewSettings:IconViewSettings:iconSize 72" ~/Library/Preferences/com.apple.finder.plist
 
+    # Enable snap-to-grid for icons on the desktop and in other icon views
+    /usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:arrangeBy grid" ~/Library/Preferences/com.apple.finder.plist
+    /usr/libexec/PlistBuddy -c "Set :FK_StandardViewSettings:IconViewSettings:arrangeBy grid" ~/Library/Preferences/com.apple.finder.plist
+    /usr/libexec/PlistBuddy -c "Set :StandardViewSettings:IconViewSettings:arrangeBy grid" ~/Library/Preferences/com.apple.finder.plist
+
     # Use list view in all Finder windows by default
     # Four-letter codes for the other view modes: `icnv`, `clmv`, `glyv`
     defaults write com.apple.finder FXPreferredViewStyle -string "Nlsv"
@@ -310,12 +293,6 @@
     # Enable AirDrop over Ethernet and on unsupported Macs running Lion
     defaults write com.apple.NetworkBrowser BrowseAllInterfaces -bool true
 
-    # Show the ~/Library folder
-    chflags nohidden ~/Library && xattr -d com.apple.FinderInfo ~/Library
-
-    # Show the /Volumes folder
-    sudo chflags nohidden /Volumes
-
     # Expand the following File Info panes:
     # “General”, “Open with”, and “Sharing & Permissions”
     defaults write com.apple.finder FXInfoPanesExpanded -dict \
@@ -323,14 +300,22 @@
       OpenWith -bool true \
       Privileges -bool true
 
+    # Show the ~/Library folder
+    chflags nohidden ~/Library
+
+    # Show the /Volumes folder
+    if [[ "$RUN_AS_ROOT" = true ]]; then
+        chflags nohidden /Volumes
+    fi
+
 #  --------------------------------------------------
-#   6. Dock, Dashboard, Hot Corners
+#   6. Dock, Dashboard, and Hot Corners
 #  --------------------------------------------------
 
     # Enable highlight hover effect for the grid view of a stack (Dock)
     defaults write com.apple.dock mouse-over-hilite-stack -bool true
 
-    # Set the icon size of Dock items to 36 pixels
+    # Set the icon size of Dock items
     defaults write com.apple.dock tilesize -int 72
 
     # Change minimize/maximize window effect
@@ -484,42 +469,12 @@
 #   9. Spotlight
 #  --------------------------------------------------
 
-    # Hide Spotlight tray-icon (and subsequent helper)
-    # sudo chmod 600 /System/Library/CoreServices/Search.bundle/Contents/MacOS/Search
     # Disable Spotlight indexing for any volume that gets mounted and has not yet
-    # been indexed before.
-    # Use `sudo mdutil -i off "/Volumes/foo"` to stop indexing any volume.
-    sudo defaults write /.Spotlight-V100/VolumeConfiguration Exclusions -array "/Volumes"
-    # Change indexing order and disable some search results
-    defaults write com.apple.spotlight orderedItems -array \
-      '{"enabled" = 1;"name" = "APPLICATIONS";}' \
-      '{"enabled" = 1;"name" = "SYSTEM_PREFS";}' \
-      '{"enabled" = 1;"name" = "DIRECTORIES";}' \
-      '{"enabled" = 1;"name" = "PDF";}' \
-      '{"enabled" = 1;"name" = "FONTS";}' \
-      '{"enabled" = 0;"name" = "DOCUMENTS";}' \
-      '{"enabled" = 0;"name" = "MESSAGES";}' \
-      '{"enabled" = 0;"name" = "CONTACT";}' \
-      '{"enabled" = 0;"name" = "EVENT_TODO";}' \
-      '{"enabled" = 0;"name" = "IMAGES";}' \
-      '{"enabled" = 0;"name" = "BOOKMARKS";}' \
-      '{"enabled" = 0;"name" = "MUSIC";}' \
-      '{"enabled" = 0;"name" = "MOVIES";}' \
-      '{"enabled" = 0;"name" = "PRESENTATIONS";}' \
-      '{"enabled" = 0;"name" = "SPREADSHEETS";}' \
-      '{"enabled" = 0;"name" = "SOURCE";}' \
-      '{"enabled" = 0;"name" = "MENU_DEFINITION";}' \
-      '{"enabled" = 0;"name" = "MENU_OTHER";}' \
-      '{"enabled" = 0;"name" = "MENU_CONVERSION";}' \
-      '{"enabled" = 0;"name" = "MENU_EXPRESSION";}' \
-      '{"enabled" = 0;"name" = "MENU_WEBSEARCH";}' \
-      '{"enabled" = 0;"name" = "MENU_SPOTLIGHT_SUGGESTIONS";}'
-    # Load new settings before rebuilding the index
-    killall mds > /dev/null 2>&1
-    # Make sure indexing is enabled for the main volume
-    sudo mdutil -i on / > /dev/null
-    # Rebuild the index from scratch
-    sudo mdutil -E / > /dev/null
+    if [[ "$RUN_AS_ROOT" = true ]]; then
+        sudo defaults write /.Spotlight-V100/VolumeConfiguration Exclusions -array "/Volumes"
+        # Restart spotlight
+        killall mds > /dev/null 2>&1
+    fi
 
 #  --------------------------------------------------
 #   10. Terminal & Iterm2
@@ -674,31 +629,27 @@
     # defaults write /Library/Preferences/SystemConfiguration/com.apple.captive.control.plist Active -bool false
 
 #  --------------------------------------------------
-#   19. Kill Affected
+#   19. Kill/Restart Affected Applications
 #  --------------------------------------------------
+    # Restart affected applications if `--no-restart` flag is not present.
+    if [[ ! ($* == *--no-restart*) ]]; then
+        for app in "Activity Monitor" \
+            "Address Book" \
+            "Calendar" \
+            "cfprefsd" \
+            "Contacts" \
+            "Dock" \
+            "Finder" \
+            "Google Chrome" \
+            "Mail" \
+            "Messages" \
+            "Photos" \
+            "Safari" \
+            "SystemUIServer" \
+            "Terminal" \
+            "iCal"; do
+                killall "${app}" > /dev/null 2>&1
+        done
+    fi
 
-    for app in "Activity Monitor" \
-      "Address Book" \
-      "Calendar" \
-      "cfprefsd" \
-      "Contacts" \
-      "Dock" \
-      "Finder" \
-      "Google Chrome Canary" \
-      "Google Chrome" \
-      "Mail" \
-      "Messages" \
-      "Opera" \
-      "Photos" \
-      "Safari" \
-      "SizeUp" \
-      "Spectacle" \
-      "SystemUIServer" \
-      "Terminal" \
-      "Transmission" \
-      "Tweetbot" \
-      "Twitter" \
-      "iCal"; do
-      killall "${app}" &> /dev/null
-    done
-    echo "Done. Note that some of these changes require a logout/restart to take effect."
+    printf "Please log out and log back in to make all settings take effect.\n"

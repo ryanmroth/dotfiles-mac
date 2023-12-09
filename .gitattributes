@@ -1,2 +1,6 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+#  ---------------------------------------------------------------------------
+#  Description: Standard gitattributes file.
+#  ---------------------------------------------------------------------------
+
+    # Auto detect text files and perform LF normalization
+    * text=auto
