@@ -20,15 +20,19 @@
   # Custom plugins may be added to $ZSH_CUSTOM/plugins/
   # Example format: plugins=(rails git textmate ruby lighthouse)
   # Add wisely, as too many plugins slow down shell startup.
-  plugins=(git brew zsh-syntax-highlighting zsh-autosuggestions)
+  plugins=(git brew)
 
+  # Load Oh My Zsh
   source $ZSH/oh-my-zsh.sh
 
+  # Load asdf
+  source $HOMEBREW_PREFIX/opt/asdf/libexec/asdf.sh
+
   # Load zsh-syntax-highlighting.
-  source ~/.oh-my-zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+  source $HOMEBREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
   # Load zsh-autosuggestions.
-  source ~/.oh-my-zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+  source $HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 
   # Enable autosuggestions automatically.
   ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=10"
