@@ -25,9 +25,6 @@
   # Load Oh My Zsh
   source $ZSH/oh-my-zsh.sh
 
-  # Load asdf
-  source $HOMEBREW_PREFIX/opt/asdf/libexec/asdf.sh
-
   # Load zsh-syntax-highlighting.
   source $HOMEBREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
@@ -39,3 +36,6 @@
 
   # ITerm2 integration
   test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+
+  # Load asdf
+  source $(brew --prefix asdf)/opt/asdf/libexec/asdf.sh
