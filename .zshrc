@@ -20,7 +20,7 @@
   # Custom plugins may be added to $ZSH_CUSTOM/plugins/
   # Example format: plugins=(rails git textmate ruby lighthouse)
   # Add wisely, as too many plugins slow down shell startup.
-  plugins=(git brew extract urltools)
+  plugins=(git extract urltools)
 
   # Load Oh My Zsh
   source $ZSH/oh-my-zsh.sh
