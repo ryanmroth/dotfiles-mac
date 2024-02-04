@@ -3,4 +3,9 @@
 #  Note:        To be placed in the $HOME directory.
 #  ---------------------------------------------------------------------------
 
-    legacy_version_file = yes
+     legacy_version_file = yes
+     use_release_candidates = no
+     always_keep_download = no
+     plugin_repository_last_check_duration = 60
+     disable_plugin_short_name_repository = no
+     concurrency = auto

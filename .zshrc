@@ -26,21 +26,25 @@
   source $ZSH/oh-my-zsh.sh
 
   # Load zsh-syntax-highlighting.
-  source $HOMEBREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-
+  source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
   # Load zsh-autosuggestions.
-  source $HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+  source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 
   # Enable autosuggestions automatically.
   ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=10"
 
   # Load zsh-history-substring-search.
-  source $HOMEBREW_PREFIX/share/zsh-history-substring-search/zsh-history-substring-search.zsh
+  source $(brew --prefix)/share/zsh-history-substring-search/zsh-history-substring-search.zsh
   bindkey '^[[A' history-substring-search-up
   bindkey '^[[B' history-substring-search-down
 
   # ITerm2 integration
-  test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+  source ${HOME}/.iterm2_shell_integration.zsh
 
   # Load asdf
-  source $(brew --prefix asdf)/opt/asdf/libexec/asdf.sh
+  source $(brew --prefix asdf)/libexec/asdf.sh
+
+  # Pipx Completions
+  autoload -U bashcompinit
+  bashcompinit
+  eval "$(register-python-argcomplete pipx)"
