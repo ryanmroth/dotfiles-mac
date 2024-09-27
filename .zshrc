@@ -20,7 +20,7 @@
   # Custom plugins may be added to $ZSH_CUSTOM/plugins/
   # Example format: plugins=(rails git textmate ruby lighthouse)
   # Add wisely, as too many plugins slow down shell startup.
-  plugins=(git extract urltools)
+  plugins=(zsh-nvm git extract urltools evalcache poetry)
 
   # Load Oh My Zsh
   source $ZSH/oh-my-zsh.sh
@@ -44,7 +44,14 @@
   # Load asdf
   source $(brew --prefix asdf)/libexec/asdf.sh
 
+# Prompt
+  export NEWLINE=$'\n'
+  export PS1='${NEWLINE}%F{8}${(l.$(afmagic_dashes)..-.)}%F{10}%D{%H:%M:%S%p} %F{7}%3~$(git_prompt_info)$(hg_prompt_info)${NEWLINE}%F{8}${(l.$(afmagic_dashes)..-.)}%F{8}» %{${reset_color}%}'
+  export PS2='%F{9}%{%}\ %{%}'
+  export RPS1='%F{9}%(?..%{%}%? ↵%{%})$(virtualenv_prompt_info) %F{8}%{%}%n@%m%{%}'
+
   # Pipx Completions
   autoload -U bashcompinit
   bashcompinit
-  eval "$(register-python-argcomplete pipx)"
+  # eval "$(register-python-argcomplete pipx)"
+  _evalcache register-python-argcomplete pipx
