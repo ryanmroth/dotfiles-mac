@@ -15,12 +15,16 @@
   # Display red dots whilst waiting for completion.
   COMPLETION_WAITING_DOTS="true"
 
+  # Enable lazy loading nvm
+  export NVM_LAZY_LOAD="true"
+  export NVM_COMPLETION="true"
+
   # Which plugins would you like to load?
   # Standard plugins can be found in $ZSH/plugins/
   # Custom plugins may be added to $ZSH_CUSTOM/plugins/
   # Example format: plugins=(rails git textmate ruby lighthouse)
   # Add wisely, as too many plugins slow down shell startup.
-  plugins=(zsh-nvm git extract urltools evalcache poetry)
+  plugins=(zsh-nvm git extract urltools)
 
   # Load Oh My Zsh
   source $ZSH/oh-my-zsh.sh
@@ -41,17 +45,8 @@
   # ITerm2 integration
   source ${HOME}/.iterm2_shell_integration.zsh
 
-  # Load asdf
-  source $(brew --prefix asdf)/libexec/asdf.sh
-
 # Prompt
   export NEWLINE=$'\n'
   export PS1='${NEWLINE}%F{8}${(l.$(afmagic_dashes)..-.)}%F{10}%D{%H:%M:%S%p} %F{7}%3~$(git_prompt_info)$(hg_prompt_info)${NEWLINE}%F{8}${(l.$(afmagic_dashes)..-.)}%F{8}» %{${reset_color}%}'
   export PS2='%F{9}%{%}\ %{%}'
   export RPS1='%F{9}%(?..%{%}%? ↵%{%})$(virtualenv_prompt_info) %F{8}%{%}%n@%m%{%}'
-
-  # Pipx Completions
-  autoload -U bashcompinit
-  bashcompinit
-  # eval "$(register-python-argcomplete pipx)"
-  _evalcache register-python-argcomplete pipx

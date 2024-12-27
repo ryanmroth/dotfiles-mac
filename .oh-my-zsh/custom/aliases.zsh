@@ -21,13 +21,13 @@
     
     # General
     # ---------------
-    alias ls='ls -G'                    # Preferred 'ls' implementation
+    alias ls='lsd -G'                    # Preferred 'ls' implementation
     alias cp='cp -iv'                   # Preferred 'cp' implementation
     alias mv='mv -iv'                   # Preferred 'mv' implementation
     alias grep='grep --color=auto'      # Color grep
     alias mount='mount |column -t'      # Pretty and human readable mount
     alias mkdir='mkdir -pv'             # Preferred 'mkdir' implementation
-    alias ll='ls -FGlAhp'               # Preferred 'll' implementation
+    alias ll='ls -FGlAh'               # Preferred 'll' implementation
     alias less='less -FSRXc'            # Preferred 'less' implementation
     alias f='open -a Finder ./'         # Opens current directory in MacOS Finder
     alias c='clear'                     # Clear terminal display
@@ -105,7 +105,7 @@
 #  --------------------------------------------------
 
     # Update system
-    alias sysupdate='brew update && brew upgrade && brew upgrade --cask && brew cleanup && brew doctor && brew missing && pipx upgrade-all && cd ~/Tools && ./update'
+    alias sysupdate='brew update && brew upgrade && brew upgrade --cask && brew cleanup && brew doctor && brew missing && cd ~/Tools && ./update && uv tool upgrade --all && cd ~'
 
     # For use when booted into single-user
     alias mountReadWrite='/sbin/mount -uw /'

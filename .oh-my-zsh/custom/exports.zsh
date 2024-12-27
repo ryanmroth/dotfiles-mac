@@ -11,7 +11,6 @@
 #  6.  Homebrew
 #  7.  Paths
 #  8.  Manpager
-#  9.  Go
 #  ---------------------------------------------------------------------------
 
 #  --------------------------------------------------
@@ -31,19 +30,21 @@
     export PYTHONIOENCODING='UTF-8';
  
 #  --------------------------------------------------
-#   3. Homebrew
+#   3. Tokens
 #  --------------------------------------------------
 
     # Add Homebrew Github API
-    export HOMEBREW_GITHUB_API_TOKEN=""
+    export HOMEBREW_GITHUB_API_TOKEN="GITHUB API TOKEN HERE"
     # Tell homebrew to not autoupdate every single time I run it (just once a week).
     export HOMEBREW_AUTO_UPDATE_SECS=604800
+
+    export GITHUB_API_TOKEN="GITHUB API TOKEN HERE"
 
 #  --------------------------------------------------
 #   4. Paths
 #  --------------------------------------------------
 
-    export PATH=""
+    export PATH="PATH HERE"
 
 #  --------------------------------------------------
 #   5. Manpage
