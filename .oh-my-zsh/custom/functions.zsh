@@ -270,67 +270,65 @@
 #   7.  Pentesting
 #  --------------------------------------------------
 
-    # Find subdomains
-    function findsubs() {
-      if [[ $# -eq 0 ]]; then
-        echo "You must provide a domain name."
-      else
-        trimmed=$(echo "$1" | cut -f 1 -d '.')
-        subfinder -d $1 -all -cs > temp ; cat temp | cut -d "," -f 1 > $trimmed-subdomains.txt ; rm temp
-        echo
-        echo "${1}'s subdomains enumerated and saved as $trimmed-subdomains.txt"
-      fi
-    }
-
-    # Find alive subdomains
-    function livesubs() {
-      if [[ $# -eq 0 ]]; then
-        echo "You must provide file containing subdomains."
-      else
-        trimmed=$(echo "$1" | cut -f 1 -d '-')
-        cat $1 | httpx -title -wc -sc -cl -ct -location -web-server -asn -o $trimmed-alive-subdomains.txt
-        echo
-        echo "${1}'s live subdomains evaluated and saved as $trimmed-alive-subdomains.txt"
-      fi
-    }
-
-    # Capture screenshots of subdomains
-    function capturesubs() {
-      if [[ $# -eq 0 ]]; then
-        echo "You must provide file containing subdomains."
-      else
-        cat $1 | cut -f 1 -d ' ' | gowitness scan file -f -
-        echo
-        echo "${1}'s live subdomains captured and saved"
-      fi
-    }
-
-    # The three above in a single function
+    # Subdomain analysis
     function subanalyzer() {
-      if [[ $# -eq 0 ]]; then
-        echo "You must provide a domain name."
-      else
-        echo
-        echo -e "[\e[1;32mBGN\e[0m] Executing subdomain analysis."
-        trimmed=$(echo "$1" | cut -f 1 -d '.')
-        echo -e "[\e[1;35mINF\e[0m] Making directory to hold results."
-        mkdir $trimmed-results > /dev/null 2>&1
-        echo -e "[\e[1;35mINF\e[0m] Directory \e[1;36m$trimmed-results\e[0m created."
-        echo -e "[\e[1;35mINF\e[0m] Entering results directory."
-        cd $trimmed-results > /dev/null 2>&1
-        echo -e "[\e[1;35mINF\e[0m] Identifying subdomains."
-        subfinder -d $1 -all -cs > temp 2>&1 ; cat temp | cut -d "," -f 1 > $trimmed-subdomains.txt ; cat temp > subanalyzer.log ; rm temp
-        echo -e "[\e[1;35mINF\e[0m] Subdomains saved as \e[1;36m$trimmed-subdomains.txt\e[0m."
-        echo -e "[\e[1;35mINF\e[0m] Evaluating alive status of identified subdomains."
-        cat $trimmed-subdomains.txt | httpx -title -wc -sc -cl -ct -location -web-server -asn -o $trimmed-alive-subdomains.txt >> subanalyzer.log 2>&1
-        echo -e "[\e[1;35mINF\e[0m] Alive subdomains saved as \e[1;36m$trimmed-alive-subdomains.txt\e[0m."
-        echo -e "[\e[1;35mINF\e[0m] Capturing screenshots of alive subdomains."
-        cat $trimmed-alive-subdomains.txt | cut -f 1 -d ' ' | gowitness scan file -q --screenshot-format png --screenshot-fullpage -f - >> subanalyzer.log 2>&1
-        echo -e "[\e[1;35mINF\e[0m] Screenshots of alive subdomains saved in \e[1;36mscreenshots\e[0m directory."
-        echo -e "[\e[1;32mEND\e[0m] Analysis completed successfully. Log stored as \e[1;36msubanalyzer.log\e[0m"
-        echo
+      if [[ -z "$1" ]]; then
+          echo "Usage: subdomain_analysis <domain>"
+          return 1
       fi
-    }
+
+      local domain="$1"
+      local results_dir="${domain}-results"
+
+      # Create results directory
+      echo "[+] Creating results directory: $results_dir"
+      mkdir -p "$results_dir" || { echo "[-] Failed to create directory"; return 1; }
+
+      # Step 1: Run subfinder
+      echo "[+] Running subfinder for $domain..."
+      subfinder -d "$domain" -nc -silent -o "$results_dir/subdomains.txt" || {
+          echo "[-] Subfinder failed"
+          return 1
+      }
+
+      local subdomain_count=$(wc -l < "$results_dir/subdomains.txt")
+      echo "[+] Found $subdomain_count subdomains"
+
+      # Step 2: Check alive subdomains with httpx
+      echo "[+] Checking alive subdomains with httpx..."
+      httpx -l "$results_dir/subdomains.txt" \
+            -threads 50 \
+            -timeout 10 \
+            -status-code \
+            -title \
+            -silent \
+            -nc \
+            -o "$results_dir/alive_subdomains.txt" || {
+          echo "[-] httpx failed"
+          return 1
+      }
+
+      local alive_count=$(wc -l < "$results_dir/alive_subdomains.txt")
+      echo "[+] Found $alive_count alive subdomains"
+
+      # Step 3: Take screenshots with gowitness
+      echo "[+] Taking screenshots with gowitness..."
+      gowitness scan file \
+               -f "$results_dir/alive_subdomains.txt" \
+               --screenshot-format png \
+               --chrome-window-x 1280 \
+               --chrome-window-y 720 \
+               -s "$results_dir/screenshots/" \
+               -q || {
+          echo "[-] gowitness failed"
+          return 1
+      }
+
+      echo "[+] Analysis complete! Results saved in $results_dir/"
+      echo "    - Subdomains: $results_dir/subdomains.txt"
+      echo "    - Alive hosts: $results_dir/alive_subdomains.txt"
+      echo "    - Screenshots: $results_dir/screenshots/"
+  }
 
 #  --------------------------------------------------
 #   8.  Misc
