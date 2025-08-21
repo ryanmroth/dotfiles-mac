@@ -273,8 +273,8 @@
     # Subdomain analysis
     function subanalyzer() {
       if [[ -z "$1" ]]; then
-          echo "Usage: subdomain_analysis <domain>"
-          return 1
+        echo "Usage: subdomain_analysis <domain>"
+        return 1
       fi
 
       local domain="$1"
@@ -286,7 +286,7 @@
 
       # Step 1: Run subfinder
       echo "[+] Running subfinder for $domain..."
-      subfinder -d "$domain" -nc -silent -o "$results_dir/subdomains.txt" || {
+      subfinder -d "$domain" -silent -o "$results_dir/subdomains.txt" || {
           echo "[-] Subfinder failed"
           return 1
       }
@@ -302,7 +302,6 @@
             -status-code \
             -title \
             -silent \
-            -nc \
             -o "$results_dir/alive_subdomains.txt" || {
           echo "[-] httpx failed"
           return 1
@@ -311,10 +310,31 @@
       local alive_count=$(wc -l < "$results_dir/alive_subdomains.txt")
       echo "[+] Found $alive_count alive subdomains"
 
-      # Step 3: Take screenshots with gowitness
+      # Clean URLs for gowitness (remove status codes and titles)
+      echo "[+] Cleaning URLs for screenshot capture..."
+      awk '{print $1}' "$results_dir/alive_subdomains.txt" > "$results_dir/clean_urls.txt"
+
+      # Step 3: Check for .git files
+      echo "[+] Checking for .git files..."
+      sed 's|$|/.git|' "$results_dir/clean_urls.txt" > "$results_dir/git_urls.txt"
+      httpx -l "$results_dir/git_urls.txt" \
+            -threads 30 \
+            -timeout 5 \
+            -status-code \
+            -mc 200,403 \
+            -silent \
+            -o "$results_dir/git_found.txt" || {
+          echo "[-] Git check failed"
+          return 1
+      }
+
+      local git_count=$(wc -l < "$results_dir/git_found.txt" 2>/dev/null || echo "0")
+      echo "[+] Found $git_count .git files"
+
+      # Step 4: Take screenshots with gowitness
       echo "[+] Taking screenshots with gowitness..."
       gowitness scan file \
-               -f "$results_dir/alive_subdomains.txt" \
+               -f "$results_dir/clean_urls.txt" \
                --screenshot-format png \
                --chrome-window-x 1280 \
                --chrome-window-y 720 \
@@ -327,6 +347,7 @@
       echo "[+] Analysis complete! Results saved in $results_dir/"
       echo "    - Subdomains: $results_dir/subdomains.txt"
       echo "    - Alive hosts: $results_dir/alive_subdomains.txt"
+      echo "    - Git files: $results_dir/git_found.txt"
       echo "    - Screenshots: $results_dir/screenshots/"
   }
 
