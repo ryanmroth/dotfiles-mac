@@ -40,7 +40,7 @@ _build_prompt() {
 autoload -Uz add-zsh-hook
 add-zsh-hook precmd _build_prompt
 
-PROMPT=$'\n%F{8}${PROMPT_DASHES} %F{10}%D{%H:%M:%S%p} %F{7}%3~$(git_prompt_info)$(hg_prompt_info)\n%F{8}${PROMPT_DASHES} %F{8}» %f'
+PROMPT=$'\n%F{8}${PROMPT_DASHES} %F{10}%D{%H:%M:%S%p} %F{7}%3~ $(git_prompt_info)$(hg_prompt_info)\n%F{8}${PROMPT_DASHES} %F{8}» %f'
 RPROMPT='%F{9}%(?..%? ↵) $(virtualenv_prompt_info)%F{8}%n@%m%f'
 
 # -------------------------
