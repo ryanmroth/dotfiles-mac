@@ -3,74 +3,61 @@
 #  Note:        Intended to be used in concert with Oh My Zsh
 #  ---------------------------------------------------------------------------
 #  Sections:
-#  1.  Prompt
-#  2.  Language & Encoding
-#  3.  Editor
-#  4.  GPG
-#  5.  Python
-#  6.  Homebrew
-#  7.  Paths
-#  8.  Manpager
+#  1.  Language & Encoding
+#  2.  Python
+#  3.  Homebrew
+#  4.  Paths
+#  5.  Manpager
+#  6.  Go
+#  7.  Editor
+#  8.  GPG
+#  9.  Secrets
 #  ---------------------------------------------------------------------------
 
 #  --------------------------------------------------
 #   1.  Language & Encoding
 #  --------------------------------------------------
 
-    # Prefer US English and use UTF-8
-    export LANG='en_US.UTF-8';
-    export LC_ALL='en_US.UTF-8';
+    export LANG='en_US.UTF-8'
+    export LC_COLLATE='en_US.UTF-8'
 
 #  --------------------------------------------------
 #   2.  Python
 #  --------------------------------------------------
 
-    # Make Python use UTF-8 encoding for output
-    # to stdin, stdout, and stderr.
-    export PYTHONIOENCODING='UTF-8';
- 
+    export PYTHONIOENCODING='UTF-8'
+
 #  --------------------------------------------------
-#   3. Tokens
+#   3.  Homebrew
 #  --------------------------------------------------
 
-    # Add Homebrew Github API
-    export HOMEBREW_GITHUB_API_TOKEN="GITHUB API TOKEN HERE"
-    # Tell homebrew to not autoupdate every single time I run it (just once a week).
+    # Only auto-update once a week
     export HOMEBREW_AUTO_UPDATE_SECS=604800
 
-    export GITHUB_API_TOKEN="GITHUB API TOKEN HERE"
-
 #  --------------------------------------------------
-#   4. Paths
+#   4.  Paths
 #  --------------------------------------------------
 
-    export PATH="PATH HERE"
+    export PATH="$HOME/.asdf/shims:$HOME/.local/bin:$HOME/bin:$HOME/.cargo/bin:/usr/local/bin:/usr/local/git/bin:/usr/local/sbin:/opt/homebrew/bin:/opt/homebrew/sbin:/bin:/sbin:/usr/bin:/usr/sbin"
 
 #  --------------------------------------------------
-#   5. Manpage
+#   5.  Manpager
 #  --------------------------------------------------
 
-    # Don’t clear the screen after quitting a manual page.
-    export MANPAGER='less -X';
+    export MANPAGER='less -X'
 
 #  --------------------------------------------------
-#   6. Go
+#   6.  Go
 #  --------------------------------------------------
 
-    export ASDF_GOLANG_MOD_VERSION_ENABLED='false'
-    export GOPATH=$(go env GOPATH)
-    export GOROOT=$(go env GOROOT)
-    export GOBIN=$(go env GOBIN)
-    export PATH=$PATH:$GOPATH/bin
-    export PATH=$PATH:$GOROOT/bin
-    export PATH=$PATH:$GOBIN
-
+    # asdf manages Go, just need GOPATH for binaries
+    export GOPATH="$HOME/go"
+    export PATH="$PATH:$GOPATH/bin"
 
 #  --------------------------------------------------
-#   7. Editor
+#   7.  Editor
 #  --------------------------------------------------
 
-    # Preferred editor for local and remote sessions
     if [[ -n $SSH_CONNECTION ]]; then
         export EDITOR='nano'
     else
@@ -81,10 +68,18 @@
 #   8.  GPG
 #  --------------------------------------------------
 
-    # GPG Agent and Authentication configuration for
-    # Yubikey SSH setup
-    GPG_TTY=$(tty)
-    SSH_AUTH_SOCK=$HOME/.gnupg/S.gpg-agent.ssh
-    export GPG_TTY SSH_AUTH_SOCK
-    gpgconf --launch gpg-agent
-    gpg-connect-agent updatestartuptty /bye
+    export GPG_TTY=$(tty)
+    export SSH_AUTH_SOCK="$HOME/.gnupg/S.gpg-agent.ssh"
+
+    # Launch agent only if not already running
+    if ! pgrep -x gpg-agent > /dev/null; then
+        gpgconf --launch gpg-agent
+    fi
+    gpg-connect-agent updatestartuptty /bye > /dev/null 2>&1
+
+#  --------------------------------------------------
+#   9.  Secrets
+#  --------------------------------------------------
+
+    # Load secrets from separate file (not tracked in git)
+    [[ -f "$HOME/.secrets" ]] && source "$HOME/.secrets"

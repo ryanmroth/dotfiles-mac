@@ -7,45 +7,41 @@
 #  1.  Make Terminal Better (Remapping defaults and adding functionality)
 #  2.  File & Folder management
 #  3.  Process Management
-#  4.  Searching
-#  5.  Networking
-#  6.  System Operations & Information
-#  7.  Git
-#  8.  GPG
-#  9.  Encoding
+#  4.  Networking
+#  5.  System Operations & Information
+#  6.  GPG
 #  ---------------------------------------------------------------------------
 
 #  --------------------------------------------------
 #   1.  Make Terminal Better
 #  --------------------------------------------------
-    
+
     # General
     # ---------------
-    alias ls='lsd -G'                    # Preferred 'ls' implementation
-    alias cp='cp -iv'                   # Preferred 'cp' implementation
-    alias mv='mv -iv'                   # Preferred 'mv' implementation
-    alias grep='grep --color=auto'      # Color grep
-    alias mount='mount |column -t'      # Pretty and human readable mount
-    alias mkdir='mkdir -pv'             # Preferred 'mkdir' implementation
-    alias ll='ls -FGlAh'               # Preferred 'll' implementation
-    alias less='less -FSRXc'            # Preferred 'less' implementation
-    alias f='open -a Finder ./'         # Opens current directory in MacOS Finder
-    alias c='clear'                     # Clear terminal display
-    alias path='echo -e ${PATH//:/\\n}' # Echo all executable Paths
-    alias fix_stty='stty sane'          # Restore terminal settings when screwed up
-    
+    alias ls='lsd'                       # Preferred 'ls' implementation
+    alias ll='lsd -lAh'                  # Preferred 'll' implementation
+    alias cp='cp -iv'                    # Preferred 'cp' implementation
+    alias mv='mv -iv'                    # Preferred 'mv' implementation
+    alias grep='grep --color=auto'       # Color grep
+    alias mount='mount | column -t'      # Pretty and human readable mount
+    alias mkdir='mkdir -pv'              # Preferred 'mkdir' implementation
+    alias less='less -FSRXc'             # Preferred 'less' implementation
+    alias f='open -a Finder ./'          # Opens current directory in MacOS Finder
+    alias c='clear'                      # Clear terminal display
+    alias path='echo -e ${PATH//:/\\n}'  # Echo all executable Paths
+    alias fix_stty='stty sane'           # Restore terminal settings when screwed up
+
     # Directories
     # ---------------
-    alias .1='cd ..'                    # Go back 1 directory level
-    alias .2='cd ../..'                 # Go back 2 directory levels
-    alias .3='cd ../../..'              # Go back 3 directory levels
-    alias .4='cd ../../../..'           # Go back 4 directory levels
-    alias .5='cd ../../../../..'        # Go back 5 directory levels
-
-    alias back='cd $OLDPWD'             # Go back to previous working directory
+    alias .1='cd ..'
+    alias .2='cd ../..'
+    alias .3='cd ../../..'
+    alias .4='cd ../../../..'
+    alias .5='cd ../../../../..'
+    alias back='cd $OLDPWD'
 
     # History
-    # --
+    # ---------------
     alias h='history'
     alias hl='history | less'
     alias hs='history | grep'
@@ -55,16 +51,16 @@
 #   2.  File & Folder Management
 #  --------------------------------------------------
 
-    alias filesize='stat -f \"%z bytes\"'     # Get file size
-    alias numFiles='echo $(ls -1 | wc -l)'    # Count of non-hidden files in current dir
-    alias make1mb='mkfile 1m ./1MB.dat'       # Creates a file of 1mb size (all zeros)
-    alias make5mb='mkfile 5m ./5MB.dat'       # Creates a file of 5mb size (all zeros)
-    alias make10mb='mkfile 10m ./10MB.dat'    # Creates a file of 10mb size (all zeros)
+    alias filesize='stat -f \"%z bytes\"'
+    alias numFiles='echo $(ls -1 | wc -l)'
+    alias make1mb='mkfile 1m ./1MB.dat'
+    alias make5mb='mkfile 5m ./5MB.dat'
+    alias make10mb='mkfile 10m ./10MB.dat'
 
 #  --------------------------------------------------
 #   3.  Process Management
 #  --------------------------------------------------
-    
+
     # Find memory hogs
     alias memHogsTop='top -l 1 -o rsize | head -20'
     alias memHogsPs='ps wwaxm -o pid,stat,vsize,rss,time,command | head -10'
@@ -79,68 +75,31 @@
     alias ttop='top -R -F -s 10 -o rsize'
 
 #  --------------------------------------------------
-#   4.  Searching
-#  --------------------------------------------------
-    
-    # Quickly search for file
-    alias qfind='find . -name '
-    
-#  --------------------------------------------------
-#   5.  Networking
-#  --------------------------------------------------
-    
-    alias myip='curl icanhazip.com'                                 # Public facing IP Address
-    alias netCons='lsof -i'                                         # Show all open TCP/IP sockets
-    alias flushDNS='dscacheutil -flushcache'                        # Flush out the DNS Cache
-    alias lsock='sudo /usr/sbin/lsof -i -P'                         # Display open sockets
-    alias lsockU='sudo /usr/sbin/lsof -nP | grep UDP'               # Display only open UDP sockets
-    alias lsockT='sudo /usr/sbin/lsof -nP | grep TCP'               # Display only open TCP sockets
-    alias ipInfo0='ipconfig getpacket en0'                          # Get info on connections for en0
-    alias ipInfo1='ipconfig getpacket en1'                          # Get info on connections for en1
-    alias openPorts='sudo lsof -i | grep LISTEN'                    # All listening connections
-    alias ping='ping -c 5'                                          # Stop after 5 pings
-
-#  --------------------------------------------------
-#   6.  System Operations & Information
+#   4.  Networking
 #  --------------------------------------------------
 
-    # Update system
-    alias sysupdate='brew update && brew upgrade && brew upgrade --cask && brew cleanup && brew doctor && brew missing && cd ~/Tools && ./update && uv tool upgrade --all && cd ~'
+    alias myip='curl -s icanhazip.com'
+    alias netCons='lsof -i'
+    alias flushDNS='dscacheutil -flushcache'
+    alias lsock='sudo /usr/sbin/lsof -i -P'
+    alias lsockU='sudo /usr/sbin/lsof -nP | grep UDP'
+    alias lsockT='sudo /usr/sbin/lsof -nP | grep TCP'
+    alias ipInfo0='ipconfig getpacket en0'
+    alias ipInfo1='ipconfig getpacket en1'
+    alias openPorts='sudo lsof -i | grep LISTEN'
 
-    # For use when booted into single-user
+#  --------------------------------------------------
+#   5.  System Operations & Information
+#  --------------------------------------------------
+
     alias mountReadWrite='/sbin/mount -uw /'
-
-    # Recursively delete .DS_Store files
-    alias cleanupDS='find . -type f -name "*.DS_Store" -ls -delete'
-
-    # Show hidden files in Finder
+    alias cleanupDS='fd -H -t f "\.DS_Store$" -x rm'
     alias finderShowHidden='defaults write com.apple.finder ShowAllFiles TRUE'
-
-    # Hide hidden files in Finder
     alias finderHideHidden='defaults write com.apple.finder ShowAllFiles FALSE'
-
-    # Clean up LaunchServices to remove duplicates in the "Open With" menu
     alias cleanupLS='/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user && killall Finder'
-  
-#  --------------------------------------------------
-#   7.  Git
-#  --------------------------------------------------
-
-    # Updating multiple repos with one command
-    alias git-pull-all='find . -type d -name .git -exec sh -c "cd \"{}\"/../ && pwd && git pull" \;'
 
 #  --------------------------------------------------
-#   8.  GPG
+#   6.  GPG
 #  --------------------------------------------------
-    
-    # Reset GPG to support SSH authentication via Yubikey
+
     alias gpgreset='gpg-connect-agent killagent /bye; gpg-connect-agent updatestartuptty /bye; gpg-connect-agent /bye'
-
-#  --------------------------------------------------
-#   9.  Encoding
-#  --------------------------------------------------
-
-    # Aliases to base64 encoding and decoding functions
-    alias e64='encode64'
-    alias ef64='encodefile64'
-    alias d64='decode64'
