@@ -44,7 +44,7 @@
 
     [input]
         dirsearchcompat = false
-        extensions = ".js,.php,.bak,.txt,.asp,.aspx,.ashx,.jsp,.html,.zip,.jar,.sql,.json,.old,.gz,.shtml,.log,.swp,.yaml,.yml,.config,.save,.rsa,.ppk,.pub,.ps1,.sh,.ts,.component,.service,.module,.pdf,.gif,.png,.jpg,.action,.vhd,.md,.nsf,.jsf"
+        extensions = ".js,.php,.bak,.txt,.asp,.aspx,.ashx,.jsp,.html,.zip,.jar,.sql,.json,.old,.gz,.shtml,.log,.swp,.yaml,.yml,.config,.save,.rsa,.ppk,.pub,.ps1,.sh,.ts,.component,.service,.module,.pdf,.gif,.png,.jpg,.action,.vhd,.md,.nsf,.jsf,.cfm,.mdb,.apexp,.cfg"
         ignorewordlistcomments = true
         inputmode = "clusterbomb"
         inputnum = 100
